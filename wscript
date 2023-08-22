@@ -54,19 +54,24 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_cxx')
 
-    if conf.env['CXX_NAME'] is 'gcc':
-        conf.check_cxx (msg="Checking for '-std=c++14'", cxxflags='-std=c++14') 
+    if conf.env['CXX_NAME'] == 'gcc':
+        conf.check_cxx (msg="Checking for '-std=c++20'", cxxflags='-std=c++20') 
         conf.env.append_unique('CXXFLAGS', \
-                ['-std=c++14', "-O2", "-Wall", "-D_UNICODE", "-DUNICODE"])
+                ['-std=c++20', "-O2", "-g", "-Wall", "-D_UNICODE", "-DUNICODE"])
         conf.env.append_unique ('STLIB', ['stdc++', 'pthread', 'ole32'])
         conf.env.append_unique ('LINKFLAGS', ['-static-libgcc', '-static-libstdc++'])
+    elif conf.env['CXX_NAME'] == 'msvc':
+        conf.check_cxx (msg="Checking for '-std=c++20'", cxxflags='/std:c++20')
+        conf.env.append_unique('CXXFLAGS', ['/EHsc', '/MT', '/O2', "/std:c++20", "/DEBUG"])
+        conf.env.append_unique('CXXFLAGS', ['/DUNICODE', '/D_UNICODE'])
 
 def build (bld):
     bld.shlib (
         target   = APPNAME, 
         source   = bld.path.ant_glob (["src/*.cpp", "share/utils/*.cpp"]), 
         includes = ['src', 'share'],
-        cxxflags = ['-DJOURNAL_TIMESTAMP="'+str(_datetime_now())+'"', '-DCIMGUI_NO_EXPORT'])
+        cxxflags = ['-DJOURNAL_TIMESTAMP="'+str(_datetime_now())+'"', '-DCIMGUI_NO_EXPORT',
+            '-DPLUGIN_NAME="' + APPNAME + '"'])
 
 def pack (bld):
     import shutil, subprocess
@@ -75,7 +80,7 @@ def pack (bld):
     root = "Data/SKSE/Plugins/"
     shutil.copytree ("assets/Data", "Data")
     shutil.copyfile ("out/"+dll, root+dll)
-    subprocess.Popen (["x86_64-w64-mingw32-strip", "-g", root+dll]).communicate ()
+    #subprocess.Popen (["x86_64-w64-mingw32-strip", "-g", root+dll]).communicate ()
     subprocess.Popen (["7z", "a", APPNAME+"-"+VERSION+".7z", 'Data']).communicate ()
     shutil.rmtree ("Data", ignore_errors=True)
 
