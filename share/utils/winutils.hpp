@@ -34,18 +34,19 @@
 #include <array>
 #include <algorithm>
 
-#ifndef NTDDI_VERSION
-#define NTDDI_VERSION NTDDI_VISTA // Default is NT, cross finger ppl dont use WinXP to play Skyrim
-#endif
+//#ifndef NTDDI_VERSION
+//#define NTDDI_VERSION NTDDI_VISTA // Default is NT, cross finger ppl dont use WinXP to play Skyrim
+//#endif
 
 #include <windows.h>
 #include <shlobj.h>
 #include <initguid.h>
 #include <knownfolders.h>
+#include <cstdint>
 
 //--------------------------------------------------------------------------------------------------
 
-static_assert (std::is_same<std::wstring::value_type, TCHAR>::value, "Not an _UNICODE build.");
+//static_assert (std::is_same<std::wstring::value_type, TCHAR>::value, "Not an _UNICODE build.");
 
 /// Safe convert from UTF-8 encoding to UTF-16 (Windows).
 
@@ -84,7 +85,7 @@ utf16_to_utf8 (wchar_t const* wide, T& out)
 //--------------------------------------------------------------------------------------------------
 
 /// Helper function to upload to API callers a managed range of bytes
-
+/*
 template<class In, typename Out>
 void
 copy_string (In const& src, std::size_t* n, Out* dst)
@@ -99,6 +100,7 @@ copy_string (In const& src, std::size_t* n, Out* dst)
     }
     *n = src.size () + 1;
 }
+ */
 
 //--------------------------------------------------------------------------------------------------
 
@@ -166,5 +168,40 @@ bool file_exists (T const& name) //allow const char*
 
 //--------------------------------------------------------------------------------------------------
 
-#endif
+template<class Container>
+bool
+enumerate_files (std::string const& wildcard, Container& out)
+{
+    std::wstring w;
+    if (!utf8_to_utf16 (wildcard.c_str (), w))
+        return false;
+    out.clear ();
+    WIN32_FIND_DATA fd;
+    auto h = ::FindFirstFile (w.c_str (), &fd);
+    if (h == INVALID_HANDLE_VALUE)
+        return false;
+    do
+    {
+        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            continue;
+        std::string s;
+        if (!utf16_to_utf8 (fd.cFileName, s))
+            break;
+        out.emplace_back (std::move (s));
+    }
+    while (::FindNextFile (h, &fd));
+    auto e = ::GetLastError ();
+    ::FindClose (h);
+    return e == ERROR_NO_MORE_FILES;
+}
 
+//--------------------------------------------------------------------------------------------------
+
+/// For the current process' file, look at its meta and find either the product or file version
+/// and parse them as four numbers.
+
+bool process_file_version (int& major, int& minor, int& revision, int& build);
+
+//--------------------------------------------------------------------------------------------------
+
+#endif

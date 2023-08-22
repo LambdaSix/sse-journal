@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #if defined _WIN32 || defined __CYGWIN__
-    #ifdef CIMGUI_NO_EXPORT
+#ifdef CIMGUI_NO_EXPORT
         #define API
     #else
         #define API __declspec(dllexport)
@@ -14,15 +14,15 @@
     #define snprintf sprintf_s
     #endif
 #else
-    #define API
+#define API
 #endif
 
 #if defined __cplusplus
-    #define EXTERN extern "C"
+#define EXTERN extern "C"
 #else
-    #include <stdarg.h>
-    #include <stdbool.h>
-    #define EXTERN extern
+#include <stdarg.h>
+#include <stdbool.h>
+#define EXTERN extern
 #endif
 
 #define CIMGUI_API EXTERN API
@@ -876,23 +876,23 @@ struct SDL_Window;
 typedef union SDL_Event SDL_Event;
 inline ImVec2_Simple ImVec2ToSimple(ImVec2 vec)
 {
-	ImVec2_Simple result;
+    ImVec2_Simple result;
     result.x = vec.x;
     result.y = vec.y;
     return result;
 }
 inline ImVec4_Simple ImVec4ToSimple(ImVec4 vec)
 {
-	ImVec4_Simple result;
+    ImVec4_Simple result;
     result.x = vec.x;
     result.y = vec.y;
-	result.z = vec.z;
+    result.z = vec.z;
     result.w = vec.w;
     return result;
 }
 inline ImColor_Simple ImColorToSimple(ImColor col)
 {
-	ImColor_Simple result;
+    ImColor_Simple result;
     result.Value = ImVec4ToSimple(col.Value);
     return result;
 }

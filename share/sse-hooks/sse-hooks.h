@@ -175,7 +175,7 @@ sseh_find_address (const char* module, const char* name, void** address);
 /** @see #sseh_find_address() */
 
 typedef int (SSEH_CCONV* sseh_find_address_t)
-    (const char*, const char*, void**);
+(const char*, const char*, void**);
 
 /******************************************************************************/
 
@@ -216,6 +216,14 @@ typedef int (SSEH_CCONV* sseh_map_name_t) (const char*, uintptr_t);
  * Names are case-sensitive. Module based names can be used too, but they
  * make sense only if there is entry already for them after a detour. If
  * an address of such a method is needed, see #sseh_find_address().
+ *
+ * As a back up plan, this function tries to find an Address Library id
+ * assigned to this name. Then it searches an address for this id. The
+ * mappings between names and that library ids are done in text files
+ * stored in the "data\skse\plugins\sse-hooks\addrlib-names-*.txt" files.
+ * Each file consist of name and id on separate lines. Dublicated names
+ * are not allowed, dublicated ids are fine. Text lines not conforming
+ * to <start-of-row><name><one or more empty spaces><id> are ignored.
  *
  * @param[in] name to search the target address for
  * @param[out] target to receive the found value
@@ -414,44 +422,44 @@ typedef int (SSEH_CCONV* sseh_execute_t) (const char*, void*);
 
 struct sseh_api_v1
 {
-	/** @see #sseh_version() */
-	sseh_version_t version;
-	/** @see #sseh_last_error() */
-	sseh_last_error_t last_error;
-	/** @see #sseh_init() */
-	sseh_init_t init;
-	/** @see #sseh_uninit() */
-	sseh_uninit_t uninit;
-	/** @see #sseh_profile() */
-	sseh_profile_t profile;
-	/** @see #sseh_find_address() */
-	sseh_find_address_t find_address;
-	/** @see #sseh_load() */
-	sseh_load_t load;
-	/** @see #sseh_map_name() */
-	sseh_map_name_t map_name;
-	/** @see #sseh_find_target() */
-	sseh_find_target_t find_target;
-	/** @see #sseh_find_name() */
-	sseh_find_name_t find_name;
-	/** @see #sseh_detour() */
-	sseh_detour_t detour;
-	/** @see #sseh_enable() */
-	sseh_enable_t enable;
-	/** @see #sseh_disable() */
-	sseh_disable_t disable;
-	/** @see #sseh_enable_all() */
-	sseh_enable_all_t enable_all;
-	/** @see #sseh_disable_all() */
-	sseh_disable_all_t disable_all;
-	/** @see #sseh_apply() */
-	sseh_apply_t apply;
-	/** @see #sseh_identify() */
-	sseh_identify_t identify;
+    /** @see #sseh_version() */
+    sseh_version_t version;
+    /** @see #sseh_last_error() */
+    sseh_last_error_t last_error;
+    /** @see #sseh_init() */
+    sseh_init_t init;
+    /** @see #sseh_uninit() */
+    sseh_uninit_t uninit;
+    /** @see #sseh_profile() */
+    sseh_profile_t profile;
+    /** @see #sseh_find_address() */
+    sseh_find_address_t find_address;
+    /** @see #sseh_load() */
+    sseh_load_t load;
+    /** @see #sseh_map_name() */
+    sseh_map_name_t map_name;
+    /** @see #sseh_find_target() */
+    sseh_find_target_t find_target;
+    /** @see #sseh_find_name() */
+    sseh_find_name_t find_name;
+    /** @see #sseh_detour() */
+    sseh_detour_t detour;
+    /** @see #sseh_enable() */
+    sseh_enable_t enable;
+    /** @see #sseh_disable() */
+    sseh_disable_t disable;
+    /** @see #sseh_enable_all() */
+    sseh_enable_all_t enable_all;
+    /** @see #sseh_disable_all() */
+    sseh_disable_all_t disable_all;
+    /** @see #sseh_apply() */
+    sseh_apply_t apply;
+    /** @see #sseh_identify() */
+    sseh_identify_t identify;
     /** @see #sseh_merge_patch() */
     sseh_merge_patch_t merge_patch;
-	/** @see #sseh_execute() */
-	sseh_execute_t execute;
+    /** @see #sseh_execute() */
+    sseh_execute_t execute;
 };
 
 /** Points to the current API version in use. */

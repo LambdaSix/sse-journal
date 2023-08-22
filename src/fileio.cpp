@@ -33,6 +33,7 @@
 #include <fstream>
 #include <vector>
 #include <iterator>
+#include <nlohmann/json.hpp>
 
 // Warning come in a BSON parser, which is not used, and probably shouldn't be
 #if defined(__GNUC__)
