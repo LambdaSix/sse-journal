@@ -1,0 +1,63 @@
+name: Waf Python Tests
+'on':
+  workflow_dispatch:
+    inputs:
+      extra_resolve_options:
+        description: Extra Resolve Options
+        required: false
+  push:
+    branches:
+    - master
+  pull_request:
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+jobs:
+  waf-linux:
+    container:
+      image: ghcr.io/steinwurf/waf:latest
+      options: --user 0:0
+      volumes:
+      - /home/buildbot/.ssh:/root/.ssh
+    name: Linux Waf
+    runs-on:
+    - self-hosted
+    - docker
+    - builder
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Configure
+      run: python3 waf configure
+    - name: Build
+      run: python3 waf
+    - name: Test
+      run: python3 waf --run_tests -vv
+  waf-macos:
+    name: macOS Waf
+    runs-on:
+    - self-hosted
+    - macOS
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Configure
+      run: python3 waf configure
+    - name: Build
+      run: python3 waf
+    - name: Test
+      run: python3 waf --run_tests -vv
+  waf-windows:
+    name: Windows Waf
+    runs-on:
+    - self-hosted
+    - Windows
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Configure
+      run: python waf configure
+    - name: Build
+      run: python waf
+    - name: Test
+      run: python waf --run_tests -vv
