@@ -61,7 +61,7 @@ bool button_t::draw ()
     imgui.igPushFont (journal.button_font.imfont);
     imgui.igPushStyleColorU32 (ImGuiCol_Text, journal.button_font.color);
     ImVec2 ptl { wsz.x * tl.x, wsz.y * tl.y },
-           psz { wsz.x * sz.x, wsz.y * sz.y };
+            psz { wsz.x * sz.x, wsz.y * sz.y };
     imgui.igSetCursorPos (ptl);
     bool pressed = imgui.igInvisibleButton (label, psz);
     bool hovered = imgui.igIsItemHovered (0);
@@ -69,9 +69,9 @@ bool button_t::draw ()
     {
         constexpr float vmax = .7226f; // The Background Y pixels reach ~72% of a 2k texture
         imgui.ImDrawList_AddImage (imgui.igGetWindowDrawList (), journal.background,
-            ImVec2 { wpos.x + ptl.x,         wpos.y + ptl.y         },
-            ImVec2 { wpos.x + ptl.x + psz.x, wpos.y + ptl.y + psz.y },
-            ImVec2 { tl.x, tl.y*vmax }, ImVec2 { tl.x + sz.x, (tl.y + sz.y)*vmax }, hover_tint);
+                                   ImVec2 { wpos.x + ptl.x,         wpos.y + ptl.y         },
+                                   ImVec2 { wpos.x + ptl.x + psz.x, wpos.y + ptl.y + psz.y },
+                                   ImVec2 { tl.x, tl.y*vmax }, ImVec2 { tl.x + sz.x, (tl.y + sz.y)*vmax }, hover_tint);
     }
     auto txtsz = imgui.igCalcTextSize (label, label_end, false, -1.f);
     imgui.igSetCursorPos (ImVec2 { ptl.x + align.x * (psz.x - txtsz.x),
@@ -213,11 +213,11 @@ journal_command ()
     }
 
     auto it = std::find_if (journal.pages.cbegin (), journal.pages.cend (),
-            [] (page_t const& p)
-            {
-                return p.title.find (journal_message) != std::string::npos
-                  || p.content.find (journal_message) != std::string::npos;
-            });
+                            [] (page_t const& p)
+                            {
+                                return p.title.find (journal_message) != std::string::npos
+                                       || p.content.find (journal_message) != std::string::npos;
+                            });
 
     if (it == journal.pages.cend ())
     {
@@ -247,8 +247,8 @@ render (int active)
     journal_command ();
 
     if (imgui.igBegin ("SSE Journal", nullptr,
-            !journal.show_titlebar * (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)
-             | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground))
+                       !journal.show_titlebar * (ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)
+                       | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoBackground))
     {
         extern void draw_book ();
         draw_book ();
@@ -285,8 +285,8 @@ draw_book ()
     auto wsz  = button_t::wsz  = imgui.igGetWindowSize ();
 
     imgui.ImDrawList_AddImage (imgui.igGetWindowDrawList (), journal.background,
-            wpos, ImVec2 {wpos.x+wsz.x, wpos.y+wsz.y}, ImVec2 {0,0}, ImVec2 {1,.7226f},
-            IM_COL32_WHITE);
+                               wpos, ImVec2 {wpos.x+wsz.x, wpos.y+wsz.y}, ImVec2 {0,0}, ImVec2 {1,.7226f},
+                               IM_COL32_WHITE);
 
     // Ratio, ratio multiplied by pixel size and the absolute positions summed with these
     // are used all below. It may be pulled off as more capsulated and less dublication.
@@ -332,18 +332,18 @@ draw_book ()
     imgui_input_text ("##Left title", journal.pages[journal.current_page].title);
     if (imgui.igIsItemHovered (0) && !imgui.igIsItemActive ())
         imgui.ImDrawList_AddRect (imgui.igGetWindowDrawList (),
-                ImVec2 { wpos.x+left_page, wpos.y+title_top },
-                ImVec2 { wpos.x+left_page+text_width, wpos.y+title_top+imgui.igGetFrameHeight () },
-                frame_col, 0, ImDrawCornerFlags_All, 2.f);
+                                  ImVec2 { wpos.x+left_page, wpos.y+title_top },
+                                  ImVec2 { wpos.x+left_page+text_width, wpos.y+title_top+imgui.igGetFrameHeight () },
+                                  frame_col, 0, ImDrawCornerFlags_All, 2.f);
 
     imgui.igSetCursorPos (ImVec2 { right_page, title_top });
     imgui.igSetNextItemWidth (text_width);
     imgui_input_text ("##Right title", journal.pages[journal.current_page+1].title);
     if (imgui.igIsItemHovered (0) && !imgui.igIsItemActive ())
         imgui.ImDrawList_AddRect (imgui.igGetWindowDrawList (),
-                ImVec2 { wpos.x+right_page, wpos.y+title_top },
-                ImVec2 { wpos.x+right_page+text_width, wpos.y+title_top+imgui.igGetFrameHeight () },
-                frame_col, 0, ImDrawCornerFlags_All, 2.f);
+                                  ImVec2 { wpos.x+right_page, wpos.y+title_top },
+                                  ImVec2 { wpos.x+right_page+text_width, wpos.y+title_top+imgui.igGetFrameHeight () },
+                                  frame_col, 0, ImDrawCornerFlags_All, 2.f);
 
     imgui.igPopFont ();
     imgui.igPopStyleColor (1);
@@ -359,48 +359,48 @@ draw_book ()
     if (left_image.ref)
     {
         imgui.ImDrawList_AddImage (imgui.igGetWindowDrawList (), left_image.ref,
-            ImVec2 { wpos.x + left_page + text_width * left_image.xy[0],
-                     wpos.y + text_top + text_height * left_image.xy[1]},
-            ImVec2 { wpos.x + left_page + text_width * left_image.xy[2],
-                     wpos.y + text_top + text_height * left_image.xy[3] },
-            ImVec2 { left_image.uv[0], left_image.uv[1] },
-            ImVec2 { left_image.uv[2], left_image.uv[3] },
-            left_image.tint);
+                                   ImVec2 { wpos.x + left_page + text_width * left_image.xy[0],
+                                            wpos.y + text_top + text_height * left_image.xy[1]},
+                                   ImVec2 { wpos.x + left_page + text_width * left_image.xy[2],
+                                            wpos.y + text_top + text_height * left_image.xy[3] },
+                                   ImVec2 { left_image.uv[0], left_image.uv[1] },
+                                   ImVec2 { left_image.uv[2], left_image.uv[3] },
+                                   left_image.tint);
     }
     if (!left_image.ref || left_image.background)
     {
         imgui.igSetCursorPos (ImVec2 { left_page, text_top });
         imgui_input_multiline ("##Left text",
-                journal.pages[journal.current_page].content, ImVec2 { text_width, text_height });
+                               journal.pages[journal.current_page].content, ImVec2 { text_width, text_height });
         if (imgui.igIsItemHovered (0) && !imgui.igIsItemActive ())
             imgui.ImDrawList_AddRect (imgui.igGetWindowDrawList (),
-                    ImVec2 { wpos.x+left_page, wpos.y+text_top },
-                    ImVec2 { wpos.x+left_page+text_width, wpos.y+text_top+text_height },
-                    frame_col, 0, ImDrawCornerFlags_All, 2.f);
+                                      ImVec2 { wpos.x+left_page, wpos.y+text_top },
+                                      ImVec2 { wpos.x+left_page+text_width, wpos.y+text_top+text_height },
+                                      frame_col, 0, ImDrawCornerFlags_All, 2.f);
     }
 
     auto& right_image = journal.pages[journal.current_page+1].image;
     if (right_image.ref)
     {
         imgui.ImDrawList_AddImage (imgui.igGetWindowDrawList (), right_image.ref,
-            ImVec2 { wpos.x + right_page + text_width * right_image.xy[0],
-                     wpos.y + text_top + text_height * right_image.xy[1]},
-            ImVec2 { wpos.x + right_page + text_width * right_image.xy[2],
-                     wpos.y + text_top + text_height * right_image.xy[3] },
-            ImVec2 { right_image.uv[0], right_image.uv[1] },
-            ImVec2 { right_image.uv[2], right_image.uv[3] },
-            right_image.tint);
+                                   ImVec2 { wpos.x + right_page + text_width * right_image.xy[0],
+                                            wpos.y + text_top + text_height * right_image.xy[1]},
+                                   ImVec2 { wpos.x + right_page + text_width * right_image.xy[2],
+                                            wpos.y + text_top + text_height * right_image.xy[3] },
+                                   ImVec2 { right_image.uv[0], right_image.uv[1] },
+                                   ImVec2 { right_image.uv[2], right_image.uv[3] },
+                                   right_image.tint);
     }
     if (!right_image.ref || right_image.background)
     {
         imgui.igSetCursorPos (ImVec2 { right_page, text_top });
         imgui_input_multiline ("##Right text",
-                journal.pages[journal.current_page+1].content, ImVec2 { text_width, text_height });
+                               journal.pages[journal.current_page+1].content, ImVec2 { text_width, text_height });
         if (imgui.igIsItemHovered (0) && !imgui.igIsItemActive ())
             imgui.ImDrawList_AddRect (imgui.igGetWindowDrawList (),
-                    ImVec2 { wpos.x+right_page, wpos.y+text_top },
-                    ImVec2 { wpos.x+right_page+text_width, wpos.y+text_top+text_height },
-                    frame_col, 0, ImDrawCornerFlags_All, 2.f);
+                                      ImVec2 { wpos.x+right_page, wpos.y+text_top },
+                                      ImVec2 { wpos.x+right_page+text_width, wpos.y+text_top+text_height },
+                                      frame_col, 0, ImDrawCornerFlags_All, 2.f);
     }
 
     imgui.igPopFont ();
@@ -420,11 +420,11 @@ draw_settings ()
     if (imgui.igBegin ("SSE Journal: Settings", &journal.show_settings, 0))
     {
         static ImVec4 button_c  = imgui.igColorConvertU32ToFloat4 (journal.button_font.color),
-                      chapter_c = imgui.igColorConvertU32ToFloat4 (journal.chapter_font.color),
-                      text_c    = imgui.igColorConvertU32ToFloat4 (journal.text_font.color);
+                chapter_c = imgui.igColorConvertU32ToFloat4 (journal.chapter_font.color),
+                text_c    = imgui.igColorConvertU32ToFloat4 (journal.text_font.color);
         constexpr int cflags = ImGuiColorEditFlags_Float | ImGuiColorEditFlags_DisplayHSV
-            | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
-            | ImGuiColorEditFlags_AlphaBar;
+                               | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
+                               | ImGuiColorEditFlags_AlphaBar;
 
         imgui.igText ("Buttons font:");
         if (imgui.igColorEdit4 ("Color##Buttons", (float*) &button_c, cflags))
@@ -490,7 +490,7 @@ draw_variables ()
     static float items = 7.25f;
     static int varsel = -1;
     static std::string output = "(Variables output goes here)",
-                       params = "(Parameters of variables go here)";
+            params = "(Parameters of variables go here)";
     static ImGuiInputTextFlags params_flags = ImGuiInputTextFlags_ReadOnly;
     static const char* newvar_popup = "New copy of variable";
     static std::string newvar_name;
@@ -517,7 +517,7 @@ draw_variables ()
     }
     imgui_input_text ("##Output", output);
     if (imgui.igListBoxFnPtr ("##Variables", &varsel, extract_variable_text,
-            &journal.variables, static_cast<int> (journal.variables.size ()), items))
+                              &journal.variables, static_cast<int> (journal.variables.size ()), items))
     {
         if (varsel >= 0)
         {
@@ -674,7 +674,7 @@ bool
 obtain_image (std::string const& file, image_t& img)
 {
     auto it = std::find_if (journal.images.begin (), journal.images.end (),
-            [&file] (auto const& kv) { return kv.second.file == file; });
+                            [&file] (auto const& kv) { return kv.second.file == file; });
 
     if (it == journal.images.end ())
     {
@@ -727,9 +727,9 @@ draw_images ()
     static float items = 7.25f;
     static ImVec4 left_tint, right_tint;
     constexpr ImGuiColorEditFlags color_flags = ImGuiColorEditFlags_NoInputs
-        | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float
-        | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_InputRGB
-        | ImGuiColorEditFlags_PickerHueBar;
+                                                | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float
+                                                | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_InputRGB
+                                                | ImGuiColorEditFlags_PickerHueBar;
 
     auto& left_image = journal.pages[journal.current_page].image;
     auto& right_image = journal.pages[journal.current_page+1].image;
@@ -739,7 +739,7 @@ draw_images ()
 
     imgui.igSetNextItemWidth (width * .40f);
     imgui.igListBoxFnPtr ("##Image files", &namesel, extract_vector_string,
-            &names, static_cast<int> (names.size ()), items);
+                          &names, static_cast<int> (names.size ()), items);
     imgui.igSameLine (0, -1);
     imgui.igPushItemWidth (sidew);
     imgui.igBeginGroup ();
@@ -818,8 +818,8 @@ static bool
 visible_symbols (std::string const& s)
 {
     if (!s.empty ()) for (auto p = s.c_str (); *p; ++p)
-        if (*p != ' ' && !std::iscntrl (*p))
-            return true;
+            if (*p != ' ' && !std::iscntrl (*p))
+                return true;
     return false;
 }
 
@@ -846,7 +846,7 @@ draw_chapters ()
     if (imgui.igBegin ("SSE Journal: Chapters", &journal.show_chapters, 0))
     {
         if (imgui.igListBoxFnPtr ("##Chapters", &selection, extract_chapter_title, nullptr,
-                int (journal.pages.size ()), items))
+                                  int (journal.pages.size ()), items))
         {
             int ndx = selection;
             if (ndx + 1 == int (journal.pages.size ()))
@@ -862,13 +862,13 @@ draw_chapters ()
         {
             if (selection >= 0 && selection < int (journal.pages.size ()))
                 adjust = true,
-                journal.pages.insert (journal.pages.begin () + selection, page_t {});
+                        journal.pages.insert (journal.pages.begin () + selection, page_t {});
         }
         if (imgui.igButton ("Insert after", ImVec2 {-1, 0}))
         {
             if (selection >= 0 && selection < int (journal.pages.size ()))
                 adjust = true,
-                journal.pages.insert (journal.pages.begin () + selection + 1, page_t {});
+                        journal.pages.insert (journal.pages.begin () + selection + 1, page_t {});
         }
         if (imgui.igButton ("Delete", ImVec2 {-1, 0}))
             if (selection >= 0 && selection < int (journal.pages.size ()))
@@ -958,7 +958,7 @@ draw_load ()
         if (imgui.igCombo ("##Type", &typesel, types.data (), int (types.size ()), -1))
             enumerate_filenames (books_directory + filters[typesel], names);
         imgui.igListBoxFnPtr ("##Names",
-                &namesel, extract_vector_string, &names, int (names.size ()), items);
+                              &namesel, extract_vector_string, &names, int (names.size ()), items);
         imgui.igEndGroup ();
         imgui.igSameLine (0, -1);
         imgui.igBeginGroup ();
@@ -996,15 +996,15 @@ next_page ()
 {
     if (journal.current_page+2 < journal.pages.size ())
         journal.current_page++;
-    // New page if not whitespaces only. It is a bit heurestic and must be careful with regard to
-    // the UTF-8 symbols, hence bare safe assumptions were made in the ASCII range. It helps avoid
-    // including some sophisticated library for handling unicode. While the Viner font provides
-    // very few symbols, merging within an icon font or other utf-8 rich one, will cause issues if
-    // not cautious.
+        // New page if not whitespaces only. It is a bit heurestic and must be careful with regard to
+        // the UTF-8 symbols, hence bare safe assumptions were made in the ASCII range. It helps avoid
+        // including some sophisticated library for handling unicode. While the Viner font provides
+        // very few symbols, merging within an icon font or other utf-8 rich one, will cause issues if
+        // not cautious.
     else if (journal.current_page + 2 == journal.pages.size ())
     {
         if (visible_symbols (journal.pages.back ().title)
-                || visible_symbols (journal.pages.back ().content))
+            || visible_symbols (journal.pages.back ().content))
         {
             journal.pages.push_back (page_t {});
             journal.current_page++;
@@ -1034,14 +1034,14 @@ greedy_word_wrap (std::string const& source, unsigned width)
 
         if (std::isspace (source[i]))
             out[i++] = '\n';
-        // check for nearest whitespace back in string
+            // check for nearest whitespace back in string
         else for (unsigned k = i; k > 0; --k)
-            if (std::isspace (source[k]))
-            {
-                out[k] = '\n';
-                i = k + 1;
-                break;
-            }
+                if (std::isspace (source[k]))
+                {
+                    out[k] = '\n';
+                    i = k + 1;
+                    break;
+                }
     }
     return out;
 }

@@ -131,6 +131,8 @@ handle_journal_message (SKSEMessagingInterface::Message* m)
 static void
 handle_sseimgui_message (SKSEMessagingInterface::Message* m)
 {
+    log () << "Received message: " << m->type << " from " << m->sender << std::endl;
+
     if (m->type != SSEIMGUI_API_VERSION)
     {
         log () << "Unsupported SSEIMGUI interface v" << m->type
@@ -168,15 +170,21 @@ handle_sseimgui_message (SKSEMessagingInterface::Message* m)
 static void
 handle_sseh_message (SKSEMessagingInterface::Message* m)
 {
+    log () << "Received message: " << m->type << " from " << m->sender << std::endl;
+
     if (m->type != SSEH_API_VERSION)
     {
         log () << "Unsupported SSEH interface v" << m->type
                << " (it is not v" << SSEH_API_VERSION
-                << "). Bailing out." << std::endl;
+               << "). Bailing out." << std::endl;
         return;
     }
 
-    sseh = *reinterpret_cast<sseh_api*> (m->data);
+    if (m->dataLen == 0) // After sseh_apply ()
+        return;
+
+    sseh = sseh_api (*reinterpret_cast<sseh_api*> (m->data));
+    log () << "Accepted SSEH interface v" << SSEH_API_VERSION << std::endl;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -189,8 +197,12 @@ handle_skse_message (SKSEMessagingInterface::Message* m)
     if (m->type != SKSEMessagingInterface::kMessage_PostLoad)
         return;
     log () << "SKSE Post Load." << std::endl;
+
+    log () << "SSE-Journal - Registering for SSEH handler" << std::endl;
     messages->RegisterListener (plugin, "SSEH", handle_sseh_message);
+    log () << "SSE-Journal - Registering for SSEIMGUI handler" << std::endl;
     messages->RegisterListener (plugin, "SSEIMGUI", handle_sseimgui_message);
+    log () << "SSE-Journal - Registering for SSE-MAPTRACK handler" << std::endl;
     messages->RegisterListener (plugin, "sse-maptrack", handle_journal_message);
 }
 
@@ -198,19 +210,29 @@ handle_skse_message (SKSEMessagingInterface::Message* m)
 
 /// @see SKSE.PluginAPI.h
 
-extern "C" __declspec(dllexport) bool SSEIMGUI_CCONV
-SKSEPlugin_Query (SKSEInterface const* skse, PluginInfo* info)
+consteval std::uint32_t skse_plugin_version () {
+    constexpr std::array<std::uint32_t, 3> ver = {
+#include "../VERSION"
+    };
+    return (ver[0] & 0xFFu << 24) | (ver[1] & 0xFFFu << 12) | (ver[2] & 0xFFFu << 0u);
+};
+
+/// @see SKSE.PluginAPI.h
+
+extern "C" {
+
+__declspec(dllexport) SKSEPluginVersionData SKSEPlugin_Version =
 {
-    info->infoVersion = PluginInfo::kInfoVersion;
-    info->name = "sse-journal";
-    journal_version ((int*) &info->version, nullptr, nullptr, nullptr);
+    SKSEPluginVersionData::kVersion,
+    skse_plugin_version (),
+    PLUGIN_NAME,
+    "ryobg",
+    "",
+    SKSEPluginVersionData::kVersionIndependent_StructsPost629, // Disables the compatibleVersions checks
+    {RUNTIME_VERSION_1_6_640},
+    0,  // > PACKED_SKSE_VERSION i.e. works with any version of SKSE
+};
 
-    plugin = skse->GetPluginHandle ();
-
-    if (skse->isEditor)
-        return false;
-
-    return true;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -222,6 +244,7 @@ SKSEPlugin_Load (SKSEInterface const* skse)
 {
     open_log ();
 
+    plugin = skse->GetPluginHandle ();
     messages = (SKSEMessagingInterface*) skse->QueryInterface (kInterface_Messaging);
     messages->RegisterListener (plugin, "SKSE", handle_skse_message);
 
@@ -229,6 +252,7 @@ SKSEPlugin_Load (SKSEInterface const* skse)
     const char* b;
     journal_version (&a, &m, &p, &b);
     log () << "SSE-Journal "<< a <<'.'<< m <<'.'<< p <<" ("<< b <<')' << std::endl;
+    log () << "Initialized." << std::endl;
     return true;
 }
 
